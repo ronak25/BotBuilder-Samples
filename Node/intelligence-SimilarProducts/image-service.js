@@ -3,9 +3,9 @@
 // https://msdn.microsoft.com/en-us/library/dn760791.aspx
 const request = require('request').defaults({ encoding: null });
 
-const BING_API_URL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?modulesRequested=SimilarProducts&mkt=en-us&form=BCSPRD';
+const BING_API_URL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/details?modules=SimilarImages&mkt=en-us';
 
-const BING_SEARCH_API_KEY = process.env.BING_SEARCH_API_KEY;
+const BING_SEARCH_API_KEY = process.env.BING_SEARCH_API_KEY; //Insert your Bing Image Search Access Key here
 
 /** 
  *  Gets the similar products of the image from an image stream
@@ -34,7 +34,7 @@ exports.getSimilarProductsFromStream = stream => {
                     reject(body);
                 }
                 else {
-                    resolve(JSON.parse(body).visuallySimilarProducts);
+                    resolve(JSON.parse(body).visuallySimilarProducts.value);
                 }
             });
         }
@@ -65,7 +65,7 @@ exports.getSimilarProductsFromUrl = url => {
                     reject(body);
                 }
                 else {
-                    resolve(body.visuallySimilarProducts);
+                    resolve(body.visuallySimilarProducts.value);
                 }
             });
         }
