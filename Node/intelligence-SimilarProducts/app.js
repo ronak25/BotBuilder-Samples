@@ -12,6 +12,19 @@ const builder = require('botbuilder'),
     url = require('url'),
     validUrl = require('valid-url');
 
+// Have your document DB for storing state of the bot 
+var azure = require('botbuilder-azure');
+var documentDbOptions = {
+    host: 'ADD_YOUR_HOST',
+    masterKey: 'ADD_YOUR_MASTERKEY',
+    database: 'botdocs',
+    collection: 'botdata'
+};
+
+var docDbClient = new azure.DocumentDbClient(documentDbOptions);
+
+var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
+
 // Maximum number of hero cards to be returned in the carousel. If this number is greater than 10, skype throws an exception.
 const MAX_CARD_COUNT = 10;
 
@@ -64,14 +77,14 @@ bot.dialog('/', session => {
         var stream = getImageStreamFromAttachment(session.message.attachments[0]);
         imageService
             .getSimilarProductsFromStream(stream)
-            .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+            .then(visuallySimilarImages => handleApiResponse(session, visuallySimilarImages))
             .catch(error => handleErrorResponse(session, error));
     } else {
         var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
         if (imageUrl) {
             imageService
                 .getSimilarProductsFromUrl(imageUrl)
-                .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+                .then(visuallySimilarImages => handleApiResponse(session, visuallySimilarImages))
                 .catch(error => handleErrorResponse(session, error));
         } else {
             session.send('Did you upload an image? I\'m more of a visual person. Try sending me an image or an image URL');
